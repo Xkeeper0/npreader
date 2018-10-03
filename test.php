@@ -2,20 +2,20 @@
 
 	require_once("functions.php");
 
-	echo "<pre>";
-	var_dump(getFeeds());
+	//echo "<pre>";
+	$data	= getFeeds();
+//	var_dump($data);
 
-/*
-	$feeds	= array(1002, 1001, 1032, 1039, 3, 2, 35);
 
-	foreach ($feeds as $feedId) {
+
+
+	foreach ($data['feeds'] as $feedId => $feed) {
 
 		$json	= file_get_contents("https://www.npr.org/feeds/{$feedId}/feed.json");
-		$obj	= json_decode($json);
 
 		echo <<<E
 <table>
-	<caption>#{$feedId}: {$obj->title}</caption>
+	<caption>#{$feedId}: {$feed['title']}</caption>
 	<thead>
 		<tr>
 			<th>id</th>
@@ -26,27 +26,29 @@
 	</thead>
 	<tbody>
 E;
-		foreach ($obj->items as $item) {
-			$tags	= ($item->tags ? implode(", ", $item->tags) : "(none)");
+		foreach ($feed['stories'] as $storyId) {
+			$story	= $data['stories'][$storyId];
 
-			if ($item->image) {
-				$item->image	= preg_replace('#.([a-z0-9]+)$#i', '-s100-c85.$1', $item->image);
+			$tags	= ($story['tags'] ? implode(", ", $story['tags']) : "(none)");
+
+			if ($story['image']) {
+				$story['image']	= preg_replace('#.([a-z0-9]+)$#i', '-s100-c85.$1', $story['image']);
 			}
 
 			echo <<<E
 		<tr>
-			<th>{$item->id}</th>
+			<th>{$storyId}</th>
 			<td style="white-space: nowrap;">
-				P: {$item->date_published}
-				<br>M: {$item->date_modified}
+				P: {$story['date']['published']}
+				<br>M: {$story['date']['modified']}
 			</td>
 			<td>
-				<strong>{$item->title}</strong>
-				<br>{$item->summary}
+				<strong>{$story['title']}</strong>
+				<br>{$story['summary']}
 				<br>tags: $tags
 			</td>
 			<td>
-				<!-- <img src="{$item->image}" style="max-width: 200px;"> -->
+				<!-- <img src="{$story['image']}" style="max-width: 200px;"> -->
 			</td>
 		</tr>
 
@@ -59,8 +61,10 @@ E;
 </table>
 
 E;
+			die();
+			print "<br>";
 
 		echo "<hr>";
 
 	}
-*/
+

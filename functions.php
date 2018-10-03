@@ -1,8 +1,13 @@
 <?php
 
+	require_once("log.php");
+	require_once("database.php");
+
+	Log::message("Starting");
 
 	function getFeeds() {
 		$feeds	= array(1002, 1001, 1032, 1039);
+		$feeds	= array(1002);
 		/*	other valid feed ids:
 			3, 2, 35
 			always seem to be empty
@@ -13,6 +18,7 @@
 
 		foreach ($feeds as $feedId) {
 
+			Log::message("Fetching JSON feed {$feedId}");
 			$json	= file_get_contents("https://www.npr.org/feeds/{$feedId}/feed.json");
 			$obj	= json_decode($json);
 
@@ -22,6 +28,8 @@
 			];
 
 			foreach ($obj->items as $item) {
+				Log::message("  Got story id {$item->id}");
+	
 				$story	= [
 					'title'		=> $item->title,
 					'summary'	=> $item->summary,
@@ -33,8 +41,8 @@
 					'image'		=> $item->image,
 				];
 
-				$out['stories'][$item->id]			= $story;
-				$out['feeds'][$feedId]['stories'][]	= $item->id;
+				$out['stories'][(int)$item->id]			= $story;
+				$out['feeds'][$feedId]['stories'][]	= (int)$item->id;
 			}
 		}
 
