@@ -3,7 +3,7 @@
 
 	class Log {
 		public static function message($message, $level = null) {
-			$msg	= "Ymd His > $message\n";
+			$msg	= date("Ymd His") ." > $message\n";
 
 			file_put_contents("out.log", date($msg, FILE_APPEND));
 			
