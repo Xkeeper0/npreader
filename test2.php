@@ -19,4 +19,4 @@
 */
 
 	$fetcher	= new NPR\FeedFetcher();
-	$feeds		= $x->fetch();
+	$feeds		= $fetcher->fetch();
