@@ -79,7 +79,7 @@
 
 			} else {
 				// Insert only into the 'known' one
-				static::$authors['linked'][$author->authorId]		= $author;				
+				static::$authors['linked'][$author->authorId]		= $author;
 			}
 
 			return $author;
@@ -91,7 +91,7 @@
 		public static function fromDatabase($authorId, $name) {
 
 			$result		= static::findInDatabase($authorId, $name);
-			
+
 			if ($result) {
 				if ($result->name !== $name) {
 					Log::message("Author [{$authorId}] changed names? From '{$result->name}' to '$name'");
@@ -106,31 +106,23 @@
 		}
 
 
-
-		protected static function findInDatabase($authorId, $name) {
+		/**
+		 * Find (and return) an author's entry in the database
+		 * if $authorId is specified, it will be used instead of $name
+		 * @param  int|null $authorId authorId of the author
+		 * @param  int|null $name     Name of the author
+		 * @return Author|false  An Author object or false if not found
+		 */
+		protected static function findInDatabase($authorId, $name = null) {
 
 			$database	= Database::getDatabase();
 
-			// @todo This can probably be done better but eh
-
-			if ($authorId) {
-				// Find by id
-				$query		= $database->prepare("SELECT * FROM `authors` WHERE `authorId` = :authorId");
-				$query->execute([
-					'authorId'	=> $authorId,
-					]);
-
-			} elseif (!$authorId && $name) {
-				// Find author by name, if any exist
-				$query		= $database->prepare("SELECT * FROM `authors` WHERE `name` = :name AND `authorId` < 0");
-				$query->execute([
-					'name'		=> $name,
-					]);
-
-			} else {
-				// this should never happen
-				throw new \BadMethodCallException("No authorId or name specified for author");
-			}
+			// Find by id
+			$query		= $database->prepare("SELECT * FROM `authors` WHERE (`authorId` = :authorId) OR (`name` = :name AND `authorId` < 0)");
+			$query->execute([
+				'authorId'	=> $authorId,
+				'name'		=> $name,
+				]);
 
 			return $query->fetchObject(__CLASS__);
 
@@ -139,6 +131,8 @@
 
 		/**
 		 * Update an author's name
+		 * @param  string $name new name to use
+		 * @return void
 		 */
 		public function update($name) {
 			if ($this->authorId === null || $this->authorId < 0) {
@@ -152,6 +146,9 @@
 
 		/**
 		 * Insert author into db
+		 * Inserts the author object into the database
+		 *
+		 * @return void
 		 */
 		protected function insert() {
 			$database	= Database::getDatabase();
@@ -172,21 +169,14 @@
 		}
 
 
-
-
-
-
-
-
-
 		/**
 		 * Gets the ID from a NPR author URL (most of the time)
-		 * 
+		 *
 		 * @param string $url URL to extract from
 		 * @return int|null author id (if found), otherwise null
 		 */
 		public static function extractIdFromUrl($url) {
-			// 
+			//
 			$matches	= [];
 			$matched	= preg_match('#npr\.org/people/([0-9]+)/#is', $url, $matches);
 			if ($matched) {
@@ -199,8 +189,8 @@
 
 		/**
 		 * Gets an author's URL
-		 * 
-		 * @param int $id Author ID
+		 *
+		 * @param int|null $id Author ID; null for the author itself
 		 * @return string URL to view that author on NPR
 		 */
 		public function getUrl($id = null) {
@@ -210,8 +200,6 @@
 
 			return "https://www.npr.org/people/$id/";
 		}
-
-
 
 
 	}
