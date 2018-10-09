@@ -41,12 +41,19 @@
 			$this->image		= \d($storyData->image);
 			$this->tags			= \d($storyData->tags);
 			$this->insert();
+
+			if ($this->tags) {
+				foreach ($this->tags as $tag) {
+					Tag::addTag($tag, $this);
+				}
+			}
+
 		}
 
 
-		public static function getFromId($storyId) {
+		public static function getFromId($storyId, $skipDb = false) {
 			$res		= \d(static::$stories[$storyId]);
-			if ($res) {
+			if ($res || $skipDb) {
 				return $res;
 			}
 
@@ -114,6 +121,8 @@
 					'modified'	=> $this->modified,
 					'image'		=> $this->image,
 				]);
+
+				static::$stories[$this->storyId]	= $this;
 
 		}
 

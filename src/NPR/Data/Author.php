@@ -27,7 +27,7 @@
 				return;
 			}
 
-			Log::message("Adding author [{$authorId}] '$name'");
+			Log::message("    Adding author [{$authorId}] '$name'");
 			$this->authorId			= $authorId;
 			$this->name				= $name;
 
@@ -110,7 +110,7 @@
 			if ($result) {
 				// Author already exists
 				if ($name && $result->name !== $name) {
-					Log::message("Author [{$authorId}] changed names? From '{$result->name}' to '$name'");
+					Log::message("    Author [{$authorId}] changed names? From '{$result->name}' to '$name'");
 					$result->updateName($name);
 				}
 				return $result;

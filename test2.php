@@ -24,4 +24,5 @@
 	$feed		= NPR\Data\Feed::getFromId(1002);
 
 	$feed->parseStories();
-	
+
+	NPR\Data\Tag::commitTags();
