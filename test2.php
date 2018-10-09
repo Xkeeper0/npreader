@@ -22,4 +22,6 @@
 //	$feeds		= $fetcher->fetch();
 
 	$feed		= NPR\Data\Feed::getFromId(1002);
-	var_dump($feed);
+
+	$feed->parseStories();
+	

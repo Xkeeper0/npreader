@@ -36,6 +36,13 @@
 		}
 
 
+		public function parseStories() {
+			foreach ($this->data->items as $storyData) {
+				$story	= new Story($storyData);
+			}
+		}
+
+
 		protected static function getDataFromId($feedId) {
 			return new static($feedId, static::fetchData($feedId));
 		}
