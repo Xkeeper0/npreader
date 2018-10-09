@@ -18,5 +18,8 @@
 	);
 */
 
-	$fetcher	= new NPR\FeedFetcher();
-	$feeds		= $fetcher->fetch();
+//	$fetcher	= new NPR\FeedFetcher();
+//	$feeds		= $fetcher->fetch();
+
+	$feed		= NPR\Data\Feed::getFromId(1002);
+	var_dump($feed);
