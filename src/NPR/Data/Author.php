@@ -10,14 +10,17 @@
 		public $name				= null;
 
 
-		// Known authors
+		// Known authors (internal cache)
 		protected static $authors	= [
-				'linked'	=> [],
-				'unlinked'	=> [],
+				'null'	=> [],			// Collection of id-less authors
 			];
 
 
-
+		/**
+		 * Make a new author object and insert it into the database
+		 * @param int|null $authorId   NPR Author ID (or null if none)
+		 * @param string $name     Author name
+		 */
 		public function __construct($authorId = null, $name = null) {
 			if ($authorId === null && $name === null) {
 				$this->authorId		= intval($this->authorId);
@@ -33,11 +36,14 @@
 		}
 
 
+		/**
+		 * Get an author from feed a feed's data
+		 * Will check internal cache, then database, and create if missing
+		 * @param  object $authorData "author" object from feed json
+		 * @return Author author object
+		 */
+		public static function getFromData($authorData) {
 
-
-
-
-		public static function getAuthorFromData($authorData) {
 			$name	= \d($authorData->name);
 			$url	= \d($authorData->url);
 			$id		= null;
@@ -46,62 +52,28 @@
 				$id	= static::extractIdFromUrl($url);
 			}
 
-			// Author has an ID, see if we know about it
 			if ($id) {
-				$res	= \d(static::$authors['linked'][$id]);
-				if ($res) {
-					return $res;
-				} else {
-					return static::createAuthor($id, $name);
-				}
-
+				// Author has an NPR ID, see if we know of it already
+				$res	= \d(static::$authors[$id]);
 			} else {
-				$res	= \d(static::$authors['unlinked'][$name]);
-				if ($res) {
-					return $res;
+				// No NPR ID, see if we know their name
+				$res	= \d(static::$authors[null][$name]);
+			}
+
+			if (!$res) {
+				// We don't, so let's create one for them
+				$res		= static::getFromDatabase($id, $name);
+
+				if ($id) {
+					// NPR IDs are their own keys...
+					static::$authors[$id]			= $res;
 				} else {
-					return static::createAuthor(null, $name);
+					// ...non-linked authors are under a null key, indexed by name
+					static::$authors[null][$name]	= $res;
 				}
-
 			}
 
-		}
-
-
-		protected static function createAuthor($authorId, $authorName) {
-
-			$author	= static::fromDatabase($authorId, $authorName);
-
-			if ($authorId === null) {
-				// If unknown, insert into both holding areas
-				static::$authors['unlinked'][$authorName]			= $author;
-				static::$authors['linked'][$author->authorId]		= $author;
-
-			} else {
-				// Insert only into the 'known' one
-				static::$authors['linked'][$author->authorId]		= $author;
-			}
-
-			return $author;
-		}
-
-
-
-
-		public static function fromDatabase($authorId, $name) {
-
-			$result		= static::findInDatabase($authorId, $name);
-
-			if ($result) {
-				if ($result->name !== $name) {
-					Log::message("Author [{$authorId}] changed names? From '{$result->name}' to '$name'");
-					$result->update($name);
-				}
-				return $result;
-			}
-
-			// Not found, make new one
-			return new static($authorId, $name);
+			return $res;
 
 		}
 
@@ -113,18 +85,41 @@
 		 * @param  int|null $name     Name of the author
 		 * @return Author|false  An Author object or false if not found
 		 */
-		protected static function findInDatabase($authorId, $name = null) {
+		public static function getFromDatabase($authorId, $name = null) {
 
 			$database	= Database::getDatabase();
 
-			// Find by id
-			$query		= $database->prepare("SELECT * FROM `authors` WHERE (`authorId` = :authorId) OR (`name` = :name AND `authorId` < 0)");
+			// Find by id or name, preferring id
+			// NPR authors always have ids > 1,
+			// text-only (non-link) authors are assigned < 0
+			$query		= $database->prepare("
+								SELECT * FROM `authors`
+								WHERE
+									(`authorId` = :authorId)
+									OR
+									(`name` = :name AND `authorId` < 0)
+								ORDER BY `authorId` DESC
+								LIMIT 1
+							");
 			$query->execute([
 				'authorId'	=> $authorId,
 				'name'		=> $name,
 				]);
 
-			return $query->fetchObject(__CLASS__);
+			$result		= $query->fetchObject(__CLASS__);
+			if ($result) {
+				// Author already exists
+				if ($name && $result->name !== $name) {
+					Log::message("Author [{$authorId}] changed names? From '{$result->name}' to '$name'");
+					$result->updateName($name);
+				}
+				return $result;
+
+			} else {
+				// Create new author
+				return new static($authorId, $name);
+
+			}
 
 		}
 
@@ -134,9 +129,9 @@
 		 * @param  string $name new name to use
 		 * @return void
 		 */
-		public function update($name) {
+		public function updateName($name) {
 			if ($this->authorId === null || $this->authorId < 0) {
-				throw new \RuntimeException("Tried to update non-id author");
+				throw new \RuntimeException("Tried to update name-only author");
 			}
 
 			$this->name	= $name;
@@ -155,11 +150,14 @@
 
 			if ($this->authorId === null) {
 				// If there is no ID for this author, generate a new one for them
+				// id-less authors are given an auto-decrementing negative id,
+				// as NPR-linked (with id) authors are positive IDs
 				$query			= $database->query("SELECT MIN(`authorId`) AS 'min' FROM `authors`");
 				$result			= $query->fetch();
 				$this->authorId	= min(0, intval($result['min'])) - 1;
 			}
 
+			// REPLACE INTO in the event of name changes
 			$query		= $database->prepare("REPLACE INTO `authors` (`authorId`, `name`) VALUES (:authorId, :name)");
 			$query->execute([
 				'authorId'	=> $this->authorId,
@@ -188,7 +186,7 @@
 
 
 		/**
-		 * Gets an author's URL
+		 * Gets an author's NPR URL
 		 *
 		 * @param int|null $id Author ID; null for the author itself
 		 * @return string URL to view that author on NPR

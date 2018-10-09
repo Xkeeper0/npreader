@@ -8,7 +8,7 @@
 
 		/**
 		 * Default feeds to fetch, if not given any
-		 * 
+		 *
 		 * Feeds 3, 2, 35 seem to exist but are always empty
 		 * (perhaps discontinued programs and such)
 		 */
@@ -62,11 +62,11 @@
 					'title'		=> $obj->title,
 					'stories'	=> []
 				];
-				
+
 				Log::message("Got feed: {$obj->title}");
 
 				foreach ($obj->items as $item) {
-					$author			= Author::getAuthorFromData($item->author);
+					$author			= Author::getFromData($item->author);
 					Log::message("  Got story id {$item->id}: Author {$author->authorId} - {$item->title}");
 					$story	= [
 						'title'		=> $item->title,
