@@ -82,15 +82,18 @@
 			$temp		= static::$tags;
 			foreach ($temp as $tag) {
 
-				foreach ($tag['stories'] as $storyId) {
-					Log::message("  Attaching tag [{$tag['id']}] to story [{$storyId}]");
+				if ($tag['stories']) {
 
+					foreach ($tag['stories'] as $storyId) {
+						Log::message("  Attaching tag [{$tag['id']}] to story [{$storyId}]");
+
+					}
+					// Insert our new tag here ...
+					$query->execute([
+						'tagId'		=> $tag['id'],
+						'storyId'	=> $storyId,
+					]);
 				}
-				// Insert our new tag here ...
-				$query->execute([
-					'tagId'		=> $tag['id'],
-					'storyId'	=> $storyId,
-				]);
 			}
 
 		}
