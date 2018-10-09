@@ -20,9 +20,20 @@
 
 //	$fetcher	= new NPR\FeedFetcher();
 //	$feeds		= $fetcher->fetch();
+	$feeds	= [1002, 1001, 1032, 1039];
+	$feed	= [];
+	foreach ($feeds as $id) {
+		$feed[$id]		= NPR\Data\Feed::getFromId($id);
 
-	$feed		= NPR\Data\Feed::getFromId(1002);
+	}
 
-	$feed->parseStories();
+	foreach ($feed as $f) {
+		$f->parseStories();
+	}
 
 	NPR\Data\Tag::commitTags();
+
+
+	#foreach (NPR\Data\Story::$stories as $story) {
+	#	var_dump($story->storyId, $story->fetched);
+	#}
