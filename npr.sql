@@ -8,7 +8,7 @@ CREATE TABLE `story_tags` (
 	`tagId`	INTEGER NOT NULL,
 	PRIMARY KEY(`storyId`,`tagId`)
 );
-CREATE TABLE "story_history" (
+CREATE TABLE `story_history` (
 	`historyId`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 	`storyId`	INTEGER NOT NULL,
 	`title`	TEXT NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE "story_history" (
 	`fetched`	TEXT,
 	`revisionId`	INTEGER
 );
-CREATE TABLE "stories" (
+CREATE TABLE `stories` (
 	`storyId`	INTEGER NOT NULL UNIQUE,
 	`title`	TEXT NOT NULL,
 	`summary`	TEXT,
@@ -32,7 +32,7 @@ CREATE TABLE "stories" (
 	`revisionId`	INTEGER,
 	PRIMARY KEY(storyId)
 );
-CREATE TABLE "revisions" (
+CREATE TABLE `revisions` (
 	`revisionId`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 	`storyId`	INTEGER NOT NULL,
 	`fetched`	TEXT NOT NULL,
