@@ -1,20 +1,14 @@
 BEGIN TRANSACTION;
-CREATE TABLE IF NOT EXISTS `tags` (
+CREATE TABLE `tags` (
 	`tagId`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 	`tagText`	TEXT NOT NULL UNIQUE
 );
-CREATE TABLE IF NOT EXISTS `story_text` (
-	`storyId`	INTEGER NOT NULL,
-	`text`	TEXT NOT NULL,
-	`fetched`	TEXT NOT NULL,
-	PRIMARY KEY(`storyId`)
-);
-CREATE TABLE IF NOT EXISTS `story_tags` (
+CREATE TABLE `story_tags` (
 	`storyId`	INTEGER NOT NULL,
 	`tagId`	INTEGER NOT NULL,
 	PRIMARY KEY(`storyId`,`tagId`)
 );
-CREATE TABLE IF NOT EXISTS `stories` (
+CREATE TABLE "stories" (
 	`storyId`	INTEGER NOT NULL UNIQUE,
 	`title`	TEXT NOT NULL,
 	`summary`	TEXT,
@@ -23,20 +17,28 @@ CREATE TABLE IF NOT EXISTS `stories` (
 	`modified`	TEXT,
 	`image`	TEXT,
 	`fetched`	TEXT,
-	PRIMARY KEY(`storyId`)
+	`revisionId`	INTEGER,
+	PRIMARY KEY(storyId)
 );
-CREATE TABLE IF NOT EXISTS `feeds` (
+CREATE TABLE "revisions" (
+	`revisionId`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	`storyId`	INTEGER NOT NULL,
+	`fetched`	TEXT NOT NULL,
+	`text`	TEXT NOT NULL,
+	`parsedText`	TEXT
+);
+CREATE TABLE `feeds` (
 	`feedId`	INTEGER NOT NULL UNIQUE,
 	`title`	TEXT NOT NULL,
 	`updated`	TEXT,
 	PRIMARY KEY(`feedId`)
 );
-CREATE TABLE IF NOT EXISTS `feed_stories` (
+CREATE TABLE `feed_stories` (
 	`feedId`	INTEGER NOT NULL,
 	`storyId`	INTEGER NOT NULL,
 	PRIMARY KEY(`storyId`,`feedId`)
 );
-CREATE TABLE IF NOT EXISTS `authors` (
+CREATE TABLE `authors` (
 	`authorId`	INTEGER NOT NULL,
 	`name`	TEXT NOT NULL,
 	PRIMARY KEY(`authorId`)
