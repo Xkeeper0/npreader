@@ -109,6 +109,18 @@
 
 			$database	= Database::getDatabase();
 
+			// Copy the old one to the historical table, if there is one
+			$query		= $database->prepare("
+							INSERT INTO `story_history`
+							SELECT
+									NULL as historyId,
+									*
+							FROM `stories`
+							WHERE `storyId` = :storyId
+							");
+			$query->execute(['storyId' => $this->storyId]);
+
+			// Insert the new/updated story
 			$query		= $database->prepare("
 								REPLACE INTO `stories`
 								(
