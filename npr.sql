@@ -56,4 +56,12 @@ CREATE TABLE `authors` (
 	`name`	TEXT NOT NULL,
 	PRIMARY KEY(`authorId`)
 );
+CREATE VIEW `tag_usage` AS
+SELECT COUNT(*) as 'count', `tagId`, `tagText` FROM  `story_tags`
+LEFT JOIN `tags`
+USING (`tagId`)
+GROUP BY `tagId`
+ORDER BY count DESC, tagText ASC;
+CREATE VIEW `stories_with_history` AS
+SELECT NULL as 'historyId', * FROM `stories` UNION SELECT * FROM `story_history`;
 COMMIT;
