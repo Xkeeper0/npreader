@@ -8,6 +8,18 @@ CREATE TABLE `story_tags` (
 	`tagId`	INTEGER NOT NULL,
 	PRIMARY KEY(`storyId`,`tagId`)
 );
+CREATE TABLE "story_history" (
+	`historyId`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	`storyId`	INTEGER NOT NULL,
+	`title`	TEXT NOT NULL,
+	`summary`	TEXT,
+	`authorId`	INTEGER,
+	`published`	TEXT NOT NULL,
+	`modified`	TEXT,
+	`image`	TEXT,
+	`fetched`	TEXT,
+	`revisionId`	INTEGER
+);
 CREATE TABLE "stories" (
 	`storyId`	INTEGER NOT NULL UNIQUE,
 	`title`	TEXT NOT NULL,
