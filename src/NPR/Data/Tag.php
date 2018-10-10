@@ -14,13 +14,18 @@
 
 		public function __construct() {
 			$key	= strtolower($this->tagText);
-			static::$tags[$key]['id']	= $this->tagId;
+			static::$tags[$key]	= [
+					'id'		=> $this->tagId,
+					'text'		=> $this->tagText,
+					'stories'	=> [],
+				];
+
 		}
 
 
 		public static function addTag($text, Story $story) {
 			$key	= strtolower($text);
-			Log::message("    Adding tag [$text] to story [$story->storyId]");
+			Log::message("      Adding tag [$text] to story [$story->storyId]");
 			if (!isset(static::$tags[$key])) {
 				static::$tags[$key]	= ['id' => null, 'text' => $text, 'stories' => []];
 			}
@@ -82,19 +87,17 @@
 			$temp		= static::$tags;
 			foreach ($temp as $tag) {
 
-				if ($tag['stories']) {
-
-					foreach ($tag['stories'] as $storyId) {
-						Log::message("  Attaching tag [{$tag['id']}] to story [{$storyId}]");
-
-					}
+				foreach ($tag['stories'] as $storyId) {
+					Log::message("  Attaching tag [{$tag['id']}] to story [{$storyId}]");
 					// Insert our new tag here ...
 					$query->execute([
 						'tagId'		=> $tag['id'],
 						'storyId'	=> $storyId,
 					]);
+
 				}
 			}
+
 
 		}
 

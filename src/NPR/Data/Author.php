@@ -27,7 +27,7 @@
 				return;
 			}
 
-			Log::message("    Adding author [{$authorId}] '$name'");
+			Log::message("      Adding author [". (\d($authorId, "new")) ."] '$name'");
 			$this->authorId			= $authorId;
 			$this->name				= $name;
 

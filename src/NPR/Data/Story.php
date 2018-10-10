@@ -28,25 +28,42 @@
 		}
 
 		public function updateFromData($storyData) {
-			$author			= Author::getFromData($storyData->author);
-			Log::message("  Got story id {$storyData->id}: Author {$author->authorId} - {$storyData->title}");
+
+			Log::message("    Story: [{$storyData->id}] {$storyData->title}");
+			// Handle author, if the story has one
+			$authorData		= \d($storyData->author);
+			if ($authorData) {
+				$this->author		= Author::getFromData($authorData);
+				$this->authorId		= $this->author->authorId;
+			} else {
+				$this->author		= null;
+				$this->authorId		= null;
+			}
+
 
 			$this->storyId		= $storyData->id;
 			$this->title		= $storyData->title;
 			$this->summary		= \d($storyData->summary);
-			$this->authorId		= $author->authorId;
-			$this->author		= $author;
 			$this->published	= \d($storyData->date_published);
 			$this->modified		= \d($storyData->date_modified);
 			$this->image		= \d($storyData->image);
 			$this->tags			= \d($storyData->tags);
-			$this->insert();
 
 			if ($this->tags) {
 				foreach ($this->tags as $tag) {
 					Tag::addTag($tag, $this);
 				}
 			}
+		}
+
+
+		public function updateDatabase($storyData = null) {
+
+			if ($storyData !== null) {
+				$this->updateFromData($storyData);
+			}
+
+			$this->insert();
 
 		}
 
@@ -101,7 +118,8 @@
 									`authorId`,
 									`published`,
 									`modified`,
-									`image`
+									`image`,
+									`fetched`
 								) VALUES (
 									:storyId,
 									:title,
@@ -109,7 +127,8 @@
 									:authorId,
 									datetime(:published),
 									datetime(:modified),
-									:image
+									:image,
+									NULL
 								)
 							");
 			$query->execute([
@@ -122,7 +141,8 @@
 					'image'		=> $this->image,
 				]);
 
-				static::$stories[$this->storyId]	= $this;
+			static::$stories[$this->storyId]	= $this;
+			Log::message("    Saved story [{$this->storyId}]");
 
 		}
 

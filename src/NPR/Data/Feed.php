@@ -39,11 +39,7 @@
 
 		public function parseStories() {
 			foreach ($this->data->items as $storyData) {
-				if (Story::getFromId($storyData->id, true)) {
-					// Already seen this story this run, skip it
-					continue;
-				}
-				$story	= new Story($storyData);
+				Collection\Stories::addStory($storyData);
 			}
 		}
 
