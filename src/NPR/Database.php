@@ -5,17 +5,26 @@
 
 	class Database {
 
-		protected static $instance	= null;
-		protected static $database	= null;
+		protected static $databases	= [];
 
+		protected $filename		= "npr.db";
+		protected $structure	= "npr.sql";
+		protected $database		= null;
 
 		/**
 		 * Create sqlite db instance
 		 */
-		protected function __construct() {
-			$needsInit		= !file_exists("npr.db");
+		protected function __construct($filename = null, $structure = null) {
+			if ($filename) {
+				$this->filename		= $filename;
+			}
+			if ($structure) {
+				$this->structure	= $structure;
+			}
 
-			$database		= new PDO("sqlite:npr.db");
+			$needsInit		= !file_exists($this->filename);
+
+			$database		= new PDO("sqlite:". $this->filename);
 			$database->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			$database->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
@@ -23,7 +32,7 @@
 				$this->init($database);
 			}
 
-			static::$database	= $database;
+			$this->database	= $database;
 
 		}
 
@@ -37,32 +46,26 @@
 
 
 		protected function init($db) {
-			$sql	= file_get_contents("npr.sql");
+			$sql	= file_get_contents($this->structure);
 			$db->exec($sql);
 		}
 
 
+
 		/**
 		 * Get a singleton instance of our database
 		 */
-		public static function getInstance() {
-			if (!isset(static::$instance)) {
-				static::$instance	= new static();
+		public static function getDatabase($name = "default", $filename = null, $structure = null) {
+			if (!isset(static::$databases[$name])) {
+				static::$databases[$name]	= new static($filename, $structure);
 			}
 
-			return static::$instance;
+			return static::$databases[$name]->database();
 		}
 
 
-		/**
-		 * Get a singleton instance of our database
-		 */
-		public static function getDatabase() {
-			if (!isset(static::$database)) {
-				static::$instance	= new static();
-			}
-
-			return static::$database;
+		protected function database() {
+			return $this->database;
 		}
 
 
