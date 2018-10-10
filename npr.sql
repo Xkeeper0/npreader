@@ -48,7 +48,8 @@ CREATE TABLE `feeds` (
 CREATE TABLE `feed_stories` (
 	`feedId`	INTEGER NOT NULL,
 	`storyId`	INTEGER NOT NULL,
-	PRIMARY KEY(`storyId`,`feedId`)
+	`lastSeen`	TEXT NOT NULL,
+	PRIMARY KEY(feedId,storyId)
 );
 CREATE TABLE `authors` (
 	`authorId`	INTEGER NOT NULL,
