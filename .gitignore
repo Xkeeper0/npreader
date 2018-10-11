@@ -3,4 +3,4 @@
 sandbox*
 *.bak
 *.log
-
+vendor/
