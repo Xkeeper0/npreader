@@ -1,8 +1,8 @@
 <?php
 
-	namespace NPR\Data;
-	use NPR\Database;
-	use Log;
+	namespace X\NPR\Data;
+	use X\NPR\Database;
+	use X\Log;
 
 
 	class Story {

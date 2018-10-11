@@ -1,6 +1,6 @@
 <?php
 
-	namespace NPR;
+	namespace X\NPR;
 	use PDO;
 
 	class Database {
@@ -70,4 +70,3 @@
 
 
 	}
-

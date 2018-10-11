@@ -1,8 +1,9 @@
 <?php
 
-	namespace NPR\Data;
-	use NPR\Database;
-	use Log;
+	namespace X\NPR\Data;
+	use X\NPR\Database;
+	use X\Log;
+	use PDO;
 
 	class Tag {
 
@@ -52,7 +53,7 @@
 							");
 
 			// This will create an array of tags that actually exist already...
-			$allTags	= $query->fetchAll(\PDO::FETCH_CLASS, __CLASS__);
+			$allTags	= $query->fetchAll(PDO::FETCH_CLASS, __CLASS__);
 
 
 			$query		= $database->prepare("INSERT INTO `tags` (`tagText`) VALUES (:tagText)");

@@ -1,5 +1,6 @@
 <?php
 
+	namespace X;
 
 	class Log {
 		public static function message($message, $level = null) {
