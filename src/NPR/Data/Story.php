@@ -47,13 +47,9 @@
 			$this->published	= \d($storyData->date_published);
 			$this->modified		= \d($storyData->date_modified);
 			$this->image		= \d($storyData->image);
-			$this->tags			= \d($storyData->tags);
 
-			if ($this->tags) {
-				foreach ($this->tags as $tag) {
-					Tag::addTag($tag, $this);
-				}
-			}
+			$this->updateTags(\d($storyData->tags));
+
 		}
 
 
@@ -67,6 +63,16 @@
 
 		}
 
+		public function updateTags($tags) {
+			if (!$tags) {
+				return;
+			}
+
+			$this->tags	= $tags;
+			foreach ($tags as $tag) {
+				Tag::addTag($tag, $this);
+			}
+		}
 
 		public static function getFromId($storyId, $skipDb = false) {
 			$res		= \d(static::$stories[$storyId]);

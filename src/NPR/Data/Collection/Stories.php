@@ -57,7 +57,7 @@
 						$story	= new Story($story);
 						$story->updateDatabase();
 					}
-				};
+				}
 			}
 		}
 

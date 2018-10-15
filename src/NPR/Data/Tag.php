@@ -15,11 +15,18 @@
 
 		public function __construct() {
 			$key	= strtolower($this->tagText);
-			static::$tags[$key]	= [
-					'id'		=> $this->tagId,
-					'text'		=> $this->tagText,
-					'stories'	=> [],
-				];
+			if (!isset(static::$tags[$key])) {
+				// New tag that is not tied to the DB yet
+				static::$tags[$key]	= [
+						'id'		=> $this->tagId,
+						'text'		=> $this->tagText,
+						'stories'	=> [],
+					];
+			} else {
+				// Already existing tag, just update the ID in the db
+				static::$tags[$key]['id']	= $this->tagId;
+
+			}
 
 		}
 
@@ -89,12 +96,14 @@
 			foreach ($temp as $tag) {
 
 				foreach ($tag['stories'] as $storyId) {
-					Log::message("  Attaching tag [{$tag['id']}] to story [{$storyId}]");
 					// Insert our new tag here ...
 					$query->execute([
 						'tagId'		=> $tag['id'],
 						'storyId'	=> $storyId,
 					]);
+					if ($query->rowCount()) {
+						Log::message("  Attached tag [{$tag['id']}] to story [{$storyId}]");
+					}
 
 				}
 			}
