@@ -3,4 +3,6 @@
 sandbox*
 *.bak
 *.log
+vendor/
+composer.phar
 

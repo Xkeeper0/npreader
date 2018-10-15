@@ -1,9 +1,11 @@
 <?php
 
-	namespace NPR\Data\Collection;
-	use NPR\Data\Story;
-	use NPR\Database;
-	use Log;
+	namespace X\NPR\Data\Collection;
+	use X\NPR\Data\Story;
+	use X\NPR\Database;
+	use X\Log;
+	use PDO;
+
 
 	class Stories {
 
@@ -31,7 +33,7 @@
 							");
 
 			// This will create an array of tags that actually exist already...
-			$result		= $query->fetchAll(\PDO::FETCH_CLASS, Story::class);
+			$result		= $query->fetchAll(PDO::FETCH_CLASS, Story::class);
 
 			return rekey($result, function ($s) { return intval($s->storyId); });
 
@@ -55,7 +57,7 @@
 						$story	= new Story($story);
 						$story->updateDatabase();
 					}
-				};
+				}
 			}
 		}
 
