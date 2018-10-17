@@ -113,8 +113,8 @@
 
 		public function addRevision(Revision $revision) {
 			$database	= Database::getDatabase();
+			Log::message("  Updating story [". $this->storyId ."] with new revision ...");
 
-			// Copy the old one to the historical table, if there is one
 			$query		= $database->prepare("
 							UPDATE `stories`
 							SET
@@ -127,6 +127,7 @@
 					'storyId'		=> $this->storyId,
 				]);
 
+			Log::message("  Done!");
 		}
 
 		protected function insert() {

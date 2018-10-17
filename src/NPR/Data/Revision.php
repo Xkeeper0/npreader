@@ -41,10 +41,14 @@
 				]);
 
 			$this->revisionId	= $database->lastInsertId();
+			Log::message("  Inserted new revision [". $this->revisionId ."]");
+
+			$this->story->addRevision($this);
 
 		}
 
 		public function fetch() {
+			Log::message("  Fetching story text for story [". $this->story->storyId ."]");
 			$this->text	= static::getText($this->story->storyId);
 			return $this->text;
 		}
@@ -52,6 +56,7 @@
 
 		protected static function getText($storyId) {
 			$text	= file_get_contents("https://text.npr.org/s.php?sId=$storyId");
+			Log::message("    Story text for [$storyId]: ". strlen($text) ." byte(s)");
 			return $text;
 		}
 
