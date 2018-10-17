@@ -111,6 +111,25 @@
 		}
 
 
+		public function addRevision(Revision $revision) {
+			$database	= Database::getDatabase();
+			Log::message("  Updating story [". $this->storyId ."] with new revision ...");
+
+			$query		= $database->prepare("
+							UPDATE `stories`
+							SET
+								`fetched`		= datetime('now'),
+								`revisionId` 	= :revisionId
+							WHERE `storyId` = :storyId
+							");
+			$query->execute([
+					'revisionId'	=> $revision->revisionId,
+					'storyId'		=> $this->storyId,
+				]);
+
+			Log::message("  Done!");
+		}
+
 		protected function insert() {
 
 			$database	= Database::getDatabase();
