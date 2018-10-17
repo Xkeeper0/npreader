@@ -111,6 +111,24 @@
 		}
 
 
+		public function addRevision(Revision $revision) {
+			$database	= Database::getDatabase();
+
+			// Copy the old one to the historical table, if there is one
+			$query		= $database->prepare("
+							UPDATE `stories`
+							SET
+								`fetched`		= datetime('now'),
+								`revisionId` 	= :revisionId
+							WHERE `storyId` = :storyId
+							");
+			$query->execute([
+					'revisionId'	=> $revision->revisionId,
+					'storyId'		=> $this->storyId,
+				]);
+
+		}
+
 		protected function insert() {
 
 			$database	= Database::getDatabase();
