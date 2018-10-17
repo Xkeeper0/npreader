@@ -19,3 +19,6 @@
 
 	\X\NPR\Data\Collection\Stories::commit();
 	\X\NPR\Data\Tag::commitTags();
+
+	// Update stories with missing revisions
+	\X\NPR\StoryRevisionFetcher::updateAllMissing();
