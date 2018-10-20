@@ -5,3 +5,4 @@
 
 
 	\X\NPR\StoryRevisionFetcher::updateAllMissing();
+	\X\NPR\RevisionUpdater::parseMissingRevisions();

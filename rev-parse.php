@@ -16,6 +16,7 @@
 	print $rev->revisionId ."\n-------------\n";
 
 	print $rev->parseToMarkdown();
+	$rev->parseAndSave();
 
 	/*
 	$obj		= null;
