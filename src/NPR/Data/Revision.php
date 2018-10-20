@@ -8,8 +8,10 @@
 
 		public $revisionId	= null;
 		public $storyId		= null;
-		public $story		= null;
+		public $parsedText	= null;
 		public $text		= null;
+
+		public $story		= null;
 
 
 		public function __construct(Story $story = null) {
