@@ -16,36 +16,9 @@
 	print $rev->revisionId ."\n-------------\n";
 
 	$obj		= null;
-	$test		= testParse($rev->text, $obj);
+	$obj		= parsePass1($rev->text);
+	$test		= parsePass2($obj);
 
-
-	whatever(array_shift($test));	// Article title
-	whatever(array_shift($test));	// Author name, OR (if missing),
-	whatever(array_shift($test));	// "NPR.org, [date]" OR "[Program], ", &middot;, then either "Updated ..." OR [first paragraph of story]
-	whatever(array_shift($test));	// [first or second paragraph of story, etc.]
-	print "------------------------------------------\n";
-	whatever(array_pop($test));
-	whatever(array_pop($test));
-
-
-	function whatever($e) {
-		$m	= 100;
-		if (strlen($e['contents']) > $m) {
-			$e['contents']	= substr($e['contents'], 0, $m) ."...";
-		}
-		//printf("%-4s  %s\n", $e['type'], $e['contents']);
-	}
-
-	//$out		= $obj->saveHTML();
-
-
-	$body	= $obj->getElementsByTagName("body")->item(0);
-	$clone	= $body->cloneNode(true);
-	$test	= new DOMDocument();
-	$test->appendChild($test->importNode($clone, true));
-
-	$test->preserveWhiteSpace	= false;
-	$test->formatOutput			= true;
 
 	$htmlOut	= $test->saveHTML();
 	$mdOut		= trim(html2markdown($htmlOut));
@@ -72,16 +45,29 @@
 
 	}
 
+	function parsePass2($document) {
+
+		$body	= $document->getElementsByTagName("body")->item(0);
+		$clone	= $body->cloneNode(true);
+
+		$clean	= new DOMDocument();
+		$clean->preserveWhiteSpace	= false;
+		$clean->formatOutput		= true;
+		$clean->appendChild($clean->importNode($clone, true));
 
 
-	function testParse($html, &$out) {
+		return $clean;
+	}
 
-		$test						= new DOMDocument();
-		$test->preserveWhiteSpace	= false;
-		$test->formatOutput			= true;
-		@$test->loadHTML('<?xml encoding="utf-8" ?>' . $html);
-		$test->normalizeDocument();
-		$root	= $test->documentElement;
+
+	function parsePass1($html) {
+
+		$doc						= new DOMDocument();
+		$doc->preserveWhiteSpace	= false;
+		$doc->formatOutput			= true;
+		@$doc->loadHTML('<?xml encoding="utf-8" ?>' . $html);
+		$doc->normalizeDocument();
+		$root	= $doc->documentElement;
 		$root->normalize();
 		$body	= $root->getElementsByTagName("body")->item(0);
 		$body->normalize();
@@ -123,11 +109,7 @@
 			//print "N: ". $node->nodeName . "   C: ". $node->nodeValue ."\n";
 		}
 
-		$out	= $test;
-
-		return $elements;
-
-		return $test;
+		return $doc;
 
 	}
 
