@@ -3,6 +3,7 @@
 	require_once("src/include.php");
 
 	use X\NPR\Database;
+	use X\NPR\Data\Revision;
 
 
 	#$html		= file_get_contents("sandbox/rev-140.html");
@@ -12,10 +13,10 @@
 	#var_dump($rev);
 	#die();
 
-	print $rev['revisionId'] ."\n-------------\n";
+	print $rev->revisionId ."\n-------------\n";
 
 	$obj		= null;
-	$test		= testParse($rev['text'], $obj);
+	$test		= testParse($rev->text, $obj);
 
 
 	whatever(array_shift($test));	// Article title
@@ -48,7 +49,7 @@
 
 	$htmlOut	= $test->saveHTML();
 	$mdOut		= trim(html2markdown($htmlOut));
-	file_put_contents(sprintf("stories/rev-%04d.md", $rev['revisionId']), $mdOut);
+	file_put_contents(sprintf("stories/rev-%04d.md", $rev->revisionId), $mdOut);
 	print $mdOut ."\n\n";
 
 
@@ -65,7 +66,7 @@
 		$query->execute();
 
 		// See if it's in the database already...
-		$result		= $query->fetch(PDO::FETCH_ASSOC);
+		$result		= $query->fetchObject(Revision::class);
 
 		return $result;
 

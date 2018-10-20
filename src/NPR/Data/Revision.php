@@ -7,12 +7,20 @@
 	class Revision {
 
 		public $revisionId	= null;
+		public $storyId		= null;
 		public $story		= null;
 		public $text		= null;
 
 
-		public function __construct(Story $story) {
-			$this->story	= $story;
+		public function __construct(Story $story = null) {
+			if ($story) {
+				$this->story	= $story;
+				$this->storyId	= $story->storyId;
+
+			} elseif (!$this->storyId) {
+				// @todo better exception/message
+				throw new \Exception("you, uh, can't do this");
+			}
 		}
 
 
