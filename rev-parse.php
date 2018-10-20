@@ -15,9 +15,12 @@
 
 	print $rev->revisionId ."\n-------------\n";
 
+	print $rev->parseToMarkdown();
+
+	/*
 	$obj		= null;
-	$obj		= parsePass1($rev->text);
-	$test		= parsePass2($obj);
+	$obj		= cleanupHTML($rev->text);
+	$test		= extractHTMLBody($obj);
 
 
 	$htmlOut	= $test->saveHTML();
@@ -25,6 +28,7 @@
 	file_put_contents(sprintf("stories/rev-%04d.md", $rev->revisionId), $mdOut);
 	print $mdOut ."\n\n";
 
+	*/
 
 	function getRandomHTML() {
 		$database	= Database::getDatabase();
@@ -45,7 +49,7 @@
 
 	}
 
-	function parsePass2($document) {
+	function extractHTMLBody($document) {
 
 		$body	= $document->getElementsByTagName("body")->item(0);
 		$clone	= $body->cloneNode(true);
@@ -60,7 +64,7 @@
 	}
 
 
-	function parsePass1($html) {
+	function cleanupHTML($html) {
 
 		$doc						= new DOMDocument();
 		$doc->preserveWhiteSpace	= false;
