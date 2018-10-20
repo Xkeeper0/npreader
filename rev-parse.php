@@ -32,11 +32,11 @@
 		if (strlen($e['contents']) > $m) {
 			$e['contents']	= substr($e['contents'], 0, $m) ."...";
 		}
-		printf("%-4s  %s\n", $e['type'], $e['contents']);
+		//printf("%-4s  %s\n", $e['type'], $e['contents']);
 	}
 
 	//$out		= $obj->saveHTML();
-	
+
 
 	$body	= $obj->getElementsByTagName("body")->item(0);
 	$clone	= $body->cloneNode(true);
@@ -46,8 +46,10 @@
 	$test->preserveWhiteSpace	= false;
 	$test->formatOutput			= true;
 
-	//print $test->saveHTML();
-
+	$htmlOut	= $test->saveHTML();
+	$mdOut		= trim(html2markdown($htmlOut));
+	file_put_contents(sprintf("stories/rev-%04d.md", $rev['revisionId']), $mdOut);
+	print $mdOut ."\n\n";
 
 
 	function getRandomHTML() {
@@ -72,7 +74,7 @@
 
 
 	function testParse($html, &$out) {
-		
+
 		$test						= new DOMDocument();
 		$test->preserveWhiteSpace	= false;
 		$test->formatOutput			= true;

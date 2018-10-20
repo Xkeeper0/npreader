@@ -12,5 +12,7 @@
 
 	}
 
+	define("HTML2MD_HEADER_STYLE", "ATX");
+
 	require_once(__DIR__ . "/functions.php");
 	require_once(__DIR__ . "/html2markdown.php");
