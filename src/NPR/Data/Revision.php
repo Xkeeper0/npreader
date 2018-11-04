@@ -66,6 +66,9 @@
 
 		protected static function getText($storyId) {
 			$text	= file_get_contents("https://text.npr.org/s.php?sId=$storyId");
+			if ($text === false) {
+				throw new \RuntimeException("Failed to download revision $storyId");
+			}
 			Log::message("    Story text for [$storyId]: ". strlen($text) ." byte(s)");
 			return $text;
 		}
@@ -76,23 +79,29 @@
 				throw new \Exception("Can't save a revision we haven't saved yet!");
 			}
 
-			Log::message("  Updating parsed text for revision [". $this->revisionId ."] ...");
-			$parsedText	= $this->parseToMarkdown();
+			try {
+				Log::message("  Updating parsed text for revision [". $this->revisionId ."] ...");
+				$parsedText	= $this->parseToMarkdown();
 
 
-			$database	= Database::getDatabase();
+				$database	= Database::getDatabase();
 
-			$query		= $database->prepare("
-								UPDATE `revisions`
-								SET		`parsedText`	= :parsedText
-								WHERE	`revisionId`	= :revisionId
-							");
-			$query->execute([
-					'parsedText'	=> $parsedText,
-					'revisionId'	=> $this->revisionId,
-				]);
+				$query		= $database->prepare("
+									UPDATE `revisions`
+									SET		`parsedText`	= :parsedText
+									WHERE	`revisionId`	= :revisionId
+								");
+				$query->execute([
+						'parsedText'	=> $parsedText,
+						'revisionId'	=> $this->revisionId,
+					]);
 
-			Log::message("    Updated parsed text for revision [". $this->revisionId ."]");
+				Log::message("    Updated parsed text for revision [". $this->revisionId ."]");
+
+			} catch (\Exception $e) {
+				Log::message("[!] Failed to parse revision: ". $e->getMessage());
+
+			}
 
 		}
 
@@ -113,6 +122,10 @@
 
 
 		protected static function cleanupHTML($html) {
+
+			if (!trim($html)) {
+				throw new \RuntimeException("Can't clean empty document");
+			}
 
 			// Make a new document object and make it look decent
 			$doc						= new \DOMDocument();

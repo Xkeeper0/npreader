@@ -33,17 +33,33 @@
 			}
 
 		 	Log::message("Downloading revisions for $count stories");
+			$errors		= 0;
 			foreach ($allStories as $story) {
-				$revision	= new Revision($story);
-				$revision->fetchAndUpdate();
 
-				$done++;
-				Log::message("  Finished downloading $done / $count");
-				if ($done !== $count) {
-					$timeToSleep	= mt_rand(50, 200) / 100;
-					Log::message("    Sleeping for ". number_format($timeToSleep, 1) ." seconds...");
-					usleep($timeToSleep * 1000000);
+				try {
+					$revision	= new Revision($story);
+
+					$revision->fetchAndUpdate();
+					$sleepExtra			= 0;
+
+				} catch (\Exception $e) {
+					Log::message("    Failed to fetch and update revision: ". $e->getMessage());
+					$errors++;
+					$sleepExtra			= 5;
+
+				} finally {
+
+					$done++;
+					Log::message("  Finished downloading $done / $count". ($errors > 0 ? sprintf(" (%d error(s))", $errors) : ""));
+
+					if ($done !== $count) {
+						$timeToSleep	= mt_rand(50, 200) / 100 + $sleepExtra;
+						Log::message("    Sleeping for ". number_format($timeToSleep, 1) ." seconds...");
+						usleep($timeToSleep * 1000000);
+					}
+
 				}
+
 			}
 
 			Log::message("Done updating revisions!");
