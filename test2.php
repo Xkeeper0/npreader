@@ -22,3 +22,4 @@
 
 	// Update stories with missing revisions
 	\X\NPR\StoryRevisionFetcher::updateAllMissing();
+	\X\NPR\RevisionUpdater::parseMissingRevisions();

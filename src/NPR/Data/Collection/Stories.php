@@ -85,7 +85,7 @@
 				return false;
 			} else {
 				// uh.
-				Log::message("This story was modified EARLIER than the one we have? Is time flowing backwards?? New: ". $newTime->format("Y-m-d H:i:s P") . ", Old: ". $oldTime->format("Y-m-d H:i:s P"));
+				Log::message("This story was modified EARLIER than the one we have? Is time flowing backwards?? New: ". ($newTime == null ? "NULL!?" : $newTime->format("Y-m-d H:i:s P")) . ", Old: ". ($oldTime == null ? "NULL?!" : $oldTime->format("Y-m-d H:i:s P")));
 				return true;
 			}
 

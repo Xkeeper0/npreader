@@ -9,7 +9,10 @@
 	} else {
 		// No Composer installation, use our own simple one
 		require_once(__DIR__ . "/autoload.php");
-		require_once(__DIR__ . "/functions.php");
 
 	}
 
+	define("HTML2MD_HEADER_STYLE", "ATX");
+
+	require_once(__DIR__ . "/functions.php");
+	require_once(__DIR__ . "/html2markdown.php");

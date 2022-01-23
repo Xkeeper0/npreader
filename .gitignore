@@ -3,6 +3,7 @@
 sandbox*
 *.bak
 *.log
+*.7z
 vendor/
 composer.phar
-
+stories/
