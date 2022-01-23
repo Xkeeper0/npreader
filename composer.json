@@ -14,7 +14,8 @@
     "require": {
         "php" : "^7.0",
         "ext-PDO" : "*",
-        "ext-pdo_sqlite" : "*"
+        "ext-pdo_sqlite" : "*",
+        "jfcherng/php-diff": "^6.11"
     },
     "autoload": {
         "psr-4": {
